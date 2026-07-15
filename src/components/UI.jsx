@@ -17,31 +17,41 @@ const PATHS = {
   cal: 'M8 2v4M16 2v4M3 9h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
   bell: 'M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',
   book: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5',
+  funnel: 'M3.6 4.5h16.8a1.1 1.1 0 0 1 .84 1.81L14.6 14.3v5.2a1.1 1.1 0 0 1-.6.98l-3 1.53a1.1 1.1 0 0 1-1.6-.98V14.3L2.76 6.31A1.1 1.1 0 0 1 3.6 4.5z',
 };
 
 export function Icon({ name, size = 22 }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d={PATHS[name] || PATHS.spark} />
-    </svg>
+      <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+      >
+        <path d={PATHS[name] || PATHS.spark} />
+      </svg>
+  );
+}
+
+export function TabBadge({ count }) {
+  if (!count || count < 1) return null;
+  return (
+      <span className="tab-badge" aria-label={`${count} unread`}>
+      <span className="tab-badge-n">{count > 9 ? '9+' : count}</span>
+    </span>
   );
 }
 
 export function Stars({ n }) {
   return (
-    <span className="stars" aria-label={`Difficulty ${n} of 5`}>
+      <span className="stars" aria-label={`Difficulty ${n} of 5`}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i} className={i <= n ? '' : 'off'}>
+          <span key={i} className={i <= n ? '' : 'off'}>
           ★
         </span>
       ))}
@@ -51,9 +61,9 @@ export function Stars({ n }) {
 
 export function Progress({ pct }) {
   return (
-    <div className="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
-      <span style={{ width: `${pct}%` }} />
-    </div>
+      <div className="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
+        <span style={{ width: `${pct}%` }} />
+      </div>
   );
 }
 
@@ -63,11 +73,11 @@ export function Cite({ id }) {
 
 export function Empty({ ico, title, sub, action }) {
   return (
-    <div className="empty">
-      <div className="e-ico">{ico}</div>
-      <h3>{title}</h3>
-      <p>{sub}</p>
-      {action}
-    </div>
+      <div className="empty">
+        <div className="e-ico">{ico}</div>
+        <h3>{title}</h3>
+        <p>{sub}</p>
+        {action}
+      </div>
   );
 }
