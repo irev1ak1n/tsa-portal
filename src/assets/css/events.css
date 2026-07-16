@@ -1,0 +1,92 @@
+.event-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+@media (min-width: 680px) { .event-grid { grid-template-columns: 1fr 1fr; } }
+
+.event-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 15px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-card .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+
+.event-card h3 { margin: 0; }
+
+.event-card h3 a { color: var(--ink-hi); text-decoration: none; }
+
+.event-card h3 a:hover { color: var(--red-400); }
+
+.event-card .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.event-card .foot { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+
+.event-card p.small { --navy-700: var(--navy-200); }
+
+.match-pct {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--red-400);
+}
+
+.kv { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+@media (min-width: 680px) { .kv { grid-template-columns: repeat(4, 1fr); } }
+
+.kv .cell {
+  background: var(--tint);
+  border: 1px solid var(--tint-line);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+}
+
+.kv .cell .k {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.kv .cell .v { font-weight: 700; font-size: 0.92rem; margin-top: 3px; color: var(--ink-hi); }
+
+.rubric-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 0.9rem;
+}
+
+.rubric-row:last-child { border-bottom: 0; }
+
+.rubric-row .pts { font-family: var(--font-mono); font-weight: 600; color: var(--red-400); }
+
+.timeline-item { display: flex; gap: 12px; padding: 7px 0; }
+
+.timeline-item .tl-month {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--navy-600);
+  border-radius: 5px;
+  padding: 4px 7px;
+  height: fit-content;
+  min-width: 42px;
+  text-align: center;
+}
+
+.timeline-item .tl-text { font-size: 0.9rem; padding-top: 2px; }

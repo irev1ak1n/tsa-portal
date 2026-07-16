@@ -1,170 +1,106 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
-import { getEvent } from '../data/events.js';
-import { EVENT_RULES } from '../data/rules.js';
-import { Stars, Cite, Icon } from '../components/UI.jsx';
+import { getEvent, teamSizeLabel } from '../data/events.js';
+import { Icon } from '../components/UI.jsx';
 
 export default function EventDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { myEvents, addEvent, removeEvent } = useApp();
-  const event = getEvent(id);
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const { myEvents, addEvent, removeEvent } = useApp();
+    const event = getEvent(id);
 
-  if (!event) {
-    return (
-      <div className="card">
-        <h2>Event not found</h2>
-        <p className="muted">That event isn't in the catalog.</p>
-        <Link to="/events" className="btn navy">
-          Back to Events
-        </Link>
-      </div>
-    );
-  }
-
-  const added = myEvents.includes(event.id);
-  const rules = EVENT_RULES.filter((r) => r.eventId === event.id);
-  const totalPts = event.rubric.reduce((sum, r) => sum + r.pts, 0);
-
-  return (
-    <>
-      <div className="section">
-        <div className="eyebrow">{event.category}</div>
-        <h1>{event.name}</h1>
-        <p className="muted">{event.overview}</p>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          {added ? (
-            <button className="btn navy" onClick={() => removeEvent(event.id)}>
-              ✓ In my events — remove
-            </button>
-          ) : (
-            <button className="btn primary" onClick={() => addEvent(event.id)}>
-              <Icon name="plus" size={16} /> Add to my events
-            </button>
-          )}
-          <button
-            className="btn ghost"
-            onClick={() => navigate('/coach', { state: { q: `What are the rules for ${event.name}?` } })}
-          >
-            <Icon name="chat" size={16} /> Ask the coach
-          </button>
-        </div>
-      </div>
-
-      <div className="section kv">
-        <div className="cell">
-          <div className="k">Division</div>
-          <div className="v">{event.division === 'HS' ? 'High School' : 'Middle School'}</div>
-        </div>
-        <div className="cell">
-          <div className="k">Team size</div>
-          <div className="v">{event.teamSize}</div>
-        </div>
-        <div className="cell">
-          <div className="k">Difficulty</div>
-          <div className="v">
-            <Stars n={event.difficulty} />
-          </div>
-        </div>
-        <div className="cell">
-          <div className="k">Typical prep</div>
-          <div className="v">{event.prep}</div>
-        </div>
-      </div>
-
-      <div className="section card">
-        <h2>What you'll submit</h2>
-        {event.deliverables.map((d, i) => (
-          <div className="check" key={i}>
-            <span>• {d}</span>
-          </div>
-        ))}
-        <p className="small muted" style={{ marginTop: 10 }}>
-          Adding this event auto-creates this checklist in your Team workspace.
-        </p>
-      </div>
-
-      <div className="section card">
-        <h2>How it's scored</h2>
-        {event.rubric.map((r, i) => (
-          <div className="rubric-row" key={i}>
-            <span>{r.c}</span>
-            <span className="pts">{r.pts} pts</span>
-          </div>
-        ))}
-        <div className="rubric-row" style={{ borderTop: '2px solid var(--line)', fontWeight: 700 }}>
-          <span>Total</span>
-          <span className="pts">{totalPts} pts</span>
-        </div>
-      </div>
-
-      <div className="section card">
-        <h2>Season game plan</h2>
-        {event.timeline.map((t, i) => (
-          <div className="timeline-item" key={i}>
-            <span className="tl-month">{t.m}</span>
-            <span className="tl-text">{t.t}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="section card">
-        <h2>Advisor tips</h2>
-        {event.tips.map((t, i) => (
-          <p key={i} className="small" style={{ margin: '0 0 8px' }}>
-            → {t}
-          </p>
-        ))}
-      </div>
-
-      {rules.length > 0 && (
-        <div className="section card">
-          <h2>Key rules</h2>
-          {rules.map((r) => (
-            <div className="rule-hit" key={r.id}>
-              <div className="r-head">
-                <Cite id={r.id} />
-                <span className="r-title">{r.title}</span>
-              </div>
-              <div className="r-text">{r.text}</div>
+    if (!event) {
+        return (
+            <div className="card">
+                <h2>Event not found</h2>
+                <p className="muted">That event isn't in the catalog.</p>
+                <Link to="/events" className="btn navy">
+                    Back to Events
+                </Link>
             </div>
-          ))}
-          <p className="small muted" style={{ marginTop: 10 }}>
-            Sample rule text — verify against the official current-year Competition Guide.
-          </p>
-        </div>
-      )}
+        );
+    }
 
-      <div className="section card">
-        <h2>Where this leads</h2>
-        <p className="small muted" style={{ marginBottom: 8 }}>
-          Careers
-        </p>
-        <div className="chip-row" style={{ marginBottom: 14 }}>
-          {event.careers.map((c) => (
-            <span key={c} className="chip static">
-              {c}
-            </span>
-          ))}
-        </div>
-        <p className="small muted" style={{ marginBottom: 8 }}>
-          College majors
-        </p>
-        <div className="chip-row">
-          {event.majors.map((m) => (
-            <span key={m} className="chip static">
-              {m}
-            </span>
-          ))}
-        </div>
-      </div>
+    const added = myEvents.includes(event.id);
 
-      <div className="section card flat">
-        <h3>Software & materials</h3>
-        <p className="small muted" style={{ margin: 0 }}>
-          {event.software.join(' · ')}
-        </p>
-      </div>
-    </>
-  );
+    return (
+        <>
+            <div className="section">
+                <div className="eyebrow">{event.category}</div>
+                <h1>{event.name}</h1>
+                <p className="muted small">
+                    {event.division === 'HS' ? 'High School' : 'Middle School'} division · official TSA competitive event
+                </p>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    {added ? (
+                        <button className="btn navy" onClick={() => removeEvent(event.id)}>
+                            ✓ In my events — remove
+                        </button>
+                    ) : (
+                        <button className="btn primary" onClick={() => addEvent(event.id)}>
+                            <Icon name="plus" size={16} /> Add to my events
+                        </button>
+                    )}
+                    <button
+                        className="btn ghost"
+                        onClick={() => navigate('/coach', { state: { q: `What are the rules for ${event.name}?` } })}
+                    >
+                        <Icon name="chat" size={16} /> Ask the coach
+                    </button>
+                </div>
+            </div>
+
+            {event.eligibility ? (
+                <div className="section card">
+                    <h3>Eligibility</h3>
+                    <div className="kv" style={{ marginBottom: 12 }}>
+                        <div className="cell">
+                            <div className="k">Team size</div>
+                            <div className="v">{teamSizeLabel(event) || 'Not stated'}</div>
+                        </div>
+                        <div className="cell">
+                            <div className="k">Entries per</div>
+                            <div className="v" style={{ textTransform: 'capitalize' }}>{event.eligibility.per}</div>
+                        </div>
+                        <div className="cell">
+                            <div className="k">Individual entry</div>
+                            <div className="v">{event.eligibility.individualOk ? 'Permitted' : 'Not permitted'}</div>
+                        </div>
+                    </div>
+                    <div className="coach-quote">
+                        <div className="small" style={{ marginBottom: 4, fontWeight: 700 }}>Official chart wording</div>
+                        <span className="mono small">{event.eligibility.text}</span>
+                    </div>
+                    <p className="small muted" style={{ margin: '10px 0 0' }}>
+                        From the TSA competitive events eligibility chart. Each participant or team may submit only one entry.
+                        Your state association can set tighter limits — check with your advisor.
+                    </p>
+                </div>
+            ) : (
+                <div className="notice">
+                    <span aria-hidden="true">⚠</span>
+                    <span>
+            This event has no row in the eligibility chart loaded into the app, so its team size and entry limit
+            aren't shown. Check the official current-year chart or ask your advisor.
+          </span>
+                </div>
+            )}
+
+            <div className="notice">
+                <span aria-hidden="true">⚠</span>
+                <span>
+          Rules, deliverables, rubrics and deadlines are published in the official TSA Competition Guide for the
+          current year. They are not in this app yet — check the guide or ask your advisor.
+        </span>
+            </div>
+
+            <div className="section card">
+                <h3>Track this event</h3>
+                <p className="small muted" style={{ marginBottom: 0 }}>
+                    Add it to your events, then build your own checklist and tasks in the Team workspace from the official
+                    requirements. Your progress shows up on the dashboard.
+                </p>
+            </div>
+        </>
+    );
 }

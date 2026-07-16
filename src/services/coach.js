@@ -24,19 +24,19 @@ const STOPWORDS = new Set([
 
 function tokenize(text) {
   return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .split(/\s+/)
-    .filter((t) => t.length >= 2 && !STOPWORDS.has(t));
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter((t) => t.length >= 2 && !STOPWORDS.has(t));
 }
 
 function wordsOf(text) {
   return new Set(
-    text
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, ' ')
-      .split(/\s+/)
-      .filter((w) => w.length >= 2)
+      text
+          .toLowerCase()
+          .replace(/[^a-z0-9\s]/g, ' ')
+          .split(/\s+/)
+          .filter((w) => w.length >= 2)
   );
 }
 
@@ -50,15 +50,19 @@ function hits(token, words) {
   return false;
 }
 
-function findMentionedEvent(question) {
+function findMentionedEvent(question, division) {
   const q = question.toLowerCase();
-  const exact = EVENTS.find((e) => q.includes(e.name.toLowerCase()));
+  // Seven event names exist in BOTH divisions (Coding, Robotics, Chapter Team,
+  // Children's Stories, Data Science, System Control, Video Game Design), so
+  // always answer from the student's own division first.
+  const pool = division ? EVENTS.filter((e) => e.division === division) : EVENTS;
+  const exact = pool.find((e) => q.includes(e.name.toLowerCase()));
   if (exact) return exact;
   // Otherwise require at least two distinctive words from an event's
   // name, so "video length" alone doesn't lock onto one video event.
   let best = null;
   let bestCount = 1;
-  for (const e of EVENTS) {
+  for (const e of pool) {
     const words = e.name.toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 4);
     const count = words.filter((w) => q.includes(w)).length;
     if (count > bestCount) {
@@ -89,7 +93,7 @@ export const SUGGESTED_QUESTIONS = [
   'Can teammates switch after registration?',
   'What does the Webmaster portfolio need?',
   'When is my state conference?',
-  'What team size does Video Game Design allow?',
+  'Do I have to cite the images I use?',
 ];
 
 /**
@@ -98,7 +102,7 @@ export const SUGGESTED_QUESTIONS = [
 export function composeAnswer(question, ctx = {}) {
   const q = question.toLowerCase();
   const tokens = tokenize(question);
-  const mentioned = findMentionedEvent(question);
+  const mentioned = findMentionedEvent(question, ctx.profile?.division);
 
   // ---- Intent: dates & countdowns ----
   if (/(when|how (long|many days)|days (until|till|left))/.test(q) && /(state|regional|national|conference)/.test(q)) {
@@ -116,7 +120,7 @@ export function composeAnswer(question, ctx = {}) {
     }
     if (lines.length === 0) {
       lines.push(
-        `Regionals: ${fmt(d.regionals)} (${daysUntil(d.regionals)} days) · States: ${fmt(d.states)} (${daysUntil(d.states)} days) · Nationals: ${fmt(NATIONALS.date)} (${daysUntil(NATIONALS.date)} days).`
+          `Regionals: ${fmt(d.regionals)} (${daysUntil(d.regionals)} days) · States: ${fmt(d.states)} (${daysUntil(d.states)} days) · Nationals: ${fmt(NATIONALS.date)} (${daysUntil(NATIONALS.date)} days).`
       );
     }
     return {
@@ -130,28 +134,9 @@ export function composeAnswer(question, ctx = {}) {
   if (/(recommend|which event|what event|best event|should i (do|pick|choose|compete))/.test(q)) {
     return {
       intro:
-        'That is exactly what the Smart Recommender is for — it scores every event in your division against your interests, skills, and intended major, and explains each match.',
+          'That is exactly what the Smart Recommender is for — it scores every event in your division against your interests, skills, and intended major, and explains each match.',
       quotes: [],
       outro: 'Open Events → Get recommendations, answer two quick questions, and you will get a ranked list with reasons.',
-    };
-  }
-
-  // ---- Intent: event facts (team size, difficulty, deliverables) ----
-  if (mentioned && /(team size|how many (people|members|students)|solo|alone|difficulty|deliverable|what.*(submit|turn in)|due)/.test(q)) {
-    const facts = [];
-    if (/(team size|how many|solo|alone)/.test(q)) {
-      facts.push(`${mentioned.name} allows a team size of ${mentioned.teamSize}.`);
-    }
-    if (/difficulty/.test(q)) {
-      facts.push(`Difficulty is rated ${mentioned.difficulty}/5 with typical prep of ${mentioned.prep}.`);
-    }
-    if (/(deliverable|submit|turn in|due)/.test(q)) {
-      facts.push(`Deliverables: ${mentioned.deliverables.join('; ')}.`);
-    }
-    return {
-      intro: facts.join('\n'),
-      quotes: [],
-      outro: `Full breakdown on the ${mentioned.name} event page, including the scoring rubric and a month-by-month plan.`,
     };
   }
 
@@ -168,27 +153,27 @@ export function composeAnswer(question, ctx = {}) {
     if (mentioned && rule.eventId && rule.eventId !== mentioned.id) score -= 2;
     return { rule, score };
   })
-    .filter((r) => r.score >= 3)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
+      .filter((r) => r.score >= 3)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
 
   if (scored.length === 0) {
     return {
       intro: 'I could not find that in the rulebook data loaded into this demo.',
       quotes: [],
       outro:
-        'Try rewording with rule keywords (for example "video length", "AI", "team changes"), check the official current-year Competition Guide, or ask your advisor. This coach only answers from loaded rule text — it will not guess.',
+          'Try rewording with rule keywords (for example "video length", "AI", "team changes"), check the official current-year Competition Guide, or ask your advisor. This coach only answers from loaded rule text — it will not guess.',
     };
   }
 
   const lead = mentioned
-    ? `Here is what the loaded rules say for ${mentioned.name}:`
-    : 'Here is what the loaded rules say:';
+      ? `Here is what the loaded rules say for ${mentioned.name}:`
+      : 'Here is what the loaded rules say:';
 
   return {
     intro: lead,
     quotes: scored.map(({ rule }) => ({ id: rule.id, title: rule.title, text: rule.text })),
     outro:
-      'Cited sections are sample rule text for this demo — always verify against the official current-year Competition Guide before relying on it.',
+        'Cited sections are sample rule text for this demo — always verify against the official current-year Competition Guide before relying on it.',
   };
 }

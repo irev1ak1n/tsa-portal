@@ -1,0 +1,19 @@
+.badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+
+.badge {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.badge .b-ico { font-size: 1.6rem; }
+
+.badge .b-name { font-weight: 700; font-size: 0.82rem; margin-top: 6px; }
+
+.badge .b-desc { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+.badge.locked { background: transparent; border-style: dashed; }
+
+.badge.locked > * { opacity: 0.4; filter: grayscale(1); }

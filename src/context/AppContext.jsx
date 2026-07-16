@@ -6,41 +6,9 @@
 // ============================================================
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getEvent } from '../data/events.js';
 
 const KEY = 'tsa-hub-state-v1';
 
-const SEED_CHATS = [
-  {
-    id: 'vgd-team',
-    name: 'Video Game Design Team',
-    kind: 'group',
-    sub: '3 members',
-    messages: [
-      { id: 'm1', from: 'Sam R', text: 'Pushed the new level layout — take a look when you can.', at: '09:14', read: true },
-      { id: 'm2', from: 'Maya P', text: 'Boss fight is way too hard on the first try lol', at: '09:31', read: false },
-      { id: 'm3', from: 'Sam R', text: 'Agreed. Can we nerf it before we record the gameplay video?', at: '09:33', read: false },
-    ],
-  },
-  {
-    id: 'sam',
-    name: 'Sam R',
-    kind: 'direct',
-    sub: 'Editor',
-    messages: [
-      { id: 'm4', from: 'Sam R', text: 'Do you have the copyright checklist for the assets?', at: 'Yesterday', read: false },
-    ],
-  },
-  {
-    id: 'chapter',
-    name: 'Central High TSA',
-    kind: 'chapter',
-    sub: 'Chapter announcements',
-    messages: [
-      { id: 'm5', from: 'Mr. Delgado', text: 'Reminder: chapter meeting Thursday after school in Lab B.', at: 'Mon', read: true },
-    ],
-  },
-];
 
 const EMPTY = {
   profile: null, // { name, grade, division, state, chapter, interests[], skills[], major }
@@ -51,7 +19,9 @@ const EMPTY = {
   meetings: [], // { id, date, title }
   teamMembers: [], // { id, name, role }
   coachCount: 0,
-  chats: SEED_CHATS,
+  chats: [],
+  follows: [],
+  hiddenSuggestions: [],
 };
 
 function load() {
@@ -87,18 +57,29 @@ export function AppProvider({ children }) {
     addEvent(eventId) {
       setState((s) => {
         if (s.myEvents.includes(eventId)) return s;
-        const event = getEvent(eventId);
-        const seeded = (event?.deliverables || []).map((label) => ({
-          id: uid(),
-          label,
-          done: false,
-        }));
         return {
           ...s,
           myEvents: [...s.myEvents, eventId],
-          checklists: { ...s.checklists, [eventId]: s.checklists[eventId] || seeded },
+          checklists: { ...s.checklists, [eventId]: s.checklists[eventId] || [] },
         };
       });
+    },
+
+    addChecklistItem(eventId, label) {
+      setState((s) => ({
+        ...s,
+        checklists: {
+          ...s.checklists,
+          [eventId]: [...(s.checklists[eventId] || []), { id: uid(), label, done: false }],
+        },
+      }));
+    },
+
+    removeChecklistItem(eventId, itemId) {
+      setState((s) => ({
+        ...s,
+        checklists: { ...s.checklists, [eventId]: (s.checklists[eventId] || []).filter((i) => i.id !== itemId) },
+      }));
     },
 
     removeEvent(eventId) {
@@ -168,6 +149,26 @@ export function AppProvider({ children }) {
 
     bumpCoach() {
       setState((s) => ({ ...s, coachCount: s.coachCount + 1 }));
+    },
+
+    createThread({ id, name, kind, sub }) {
+      setState((s) => {
+        if (s.chats.some((t) => t.id === id)) return s;
+        return { ...s, chats: [{ id, name, kind, sub, messages: [] }, ...s.chats] };
+      });
+    },
+
+    toggleFollow(accountId) {
+      setState((s) => ({
+        ...s,
+        follows: s.follows.includes(accountId)
+            ? s.follows.filter((a) => a !== accountId)
+            : [...s.follows, accountId],
+      }));
+    },
+
+    hideSuggestion(accountId) {
+      setState((s) => ({ ...s, hiddenSuggestions: [...s.hiddenSuggestions, accountId] }));
     },
 
     sendMessage(threadId, text) {

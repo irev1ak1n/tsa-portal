@@ -1,50 +1,56 @@
 // ============================================================
 // Smart Event Recommender
-// Transparent scoring: every point added produces a
-// human-readable reason, so students see WHY an event matched.
+//
+// Matches the student's interests against the official event
+// names and their UI category. Every point produces a
+// human-readable reason, so students see WHY something matched.
+//
+// Team size comes from the official TSA eligibility chart, so
+// the "how do you like to work" preference is scored on real
+// data. Difficulty and required skills are NOT scored: those
+// live in the Competition Guides, which are not in this app.
 // ============================================================
 
 import { eventsForDivision } from '../data/events.js';
 
 const INTEREST_KEYWORDS = {
-  'Programming': ['coding', 'software', 'program', 'game', 'cyber', 'data'],
+  'Programming': ['coding', 'software', 'program', 'cyber', 'microcontroller', 'develop'],
   'Game design': ['game'],
   'Web design': ['web', 'website'],
-  'CAD / 3D modeling': ['cad', 'model', 'drafting', 'drawing'],
-  'Robotics': ['engineering', 'control', 'mechan', 'prototype'],
-  'Video & film': ['video', 'film'],
+  'CAD / 3D modeling': ['cad', 'modeling', 'drafting', 'technical design'],
+  'Robotics': ['robot', 'drone', 'uav', 'animatron', 'control'],
+  'Video & film': ['video', 'film', 'vlog', 'anima'],
   'Photography': ['photo'],
-  'Graphic design': ['graphic', 'photo', 'anima', 'fashion', 'portfolio'],
-  'Public speaking': ['presentation', 'speech', 'debat', 'speaking', 'interview', 'leadership'],
-  'Writing': ['writing', 'content', 'script', 'research', 'documentation'],
-  'Music & audio': ['music', 'audio', 'sound'],
-  'Science & biotech': ['biotech', 'science', 'forensic', 'stem', 'medical'],
+  'Graphic design': ['graphic', 'promotional', 'fashion', 'board game', 'design'],
+  'Public speaking': ['presentation', 'speech', 'debat', 'leadership', 'bowl', 'chapter team'],
+  'Writing': ['stories', 'podcast', 'mass media', 'vlog'],
+  'Music & audio': ['music', 'audio', 'podcast'],
+  'Science & biotech': ['biotech', 'science', 'forensic', 'stem'],
   'Medicine & health': ['medical', 'biotech', 'forensic', 'health'],
-  'Business & marketing': ['business', 'marketing', 'fashion', 'entrepreneur'],
-  'Architecture': ['architect', 'structural', 'construction'],
-  'Aviation & flight': ['flight', 'aircraft', 'aero', 'dragster'],
+  'Business & marketing': ['business', 'marketing', 'promotional', 'fashion'],
+  'Architecture': ['architect', 'structural', 'construction', 'off the grid'],
+  'Aviation & flight': ['flight', 'aviation', 'aero', 'drone', 'uav'],
+  'Data & statistics': ['data', 'analytics', 'geospatial'],
+  'Making & fabrication': ['manufactur', 'production', 'prototype', 'inventions', 'mechanical'],
+  'Cars & racing': ['dragster', 'racer', 'transportation', 'vehicle'],
+  'Teaching': ['teacher', 'stories', 'education'],
 };
 
-function blobFor(event) {
-  return [
-    event.name,
-    event.category,
-    event.overview,
-    event.skills.join(' '),
-    event.careers.join(' '),
-  ]
-    .join(' ')
-    .toLowerCase();
-}
-
-function parseTeamSize(teamSize) {
-  const nums = teamSize.match(/\d+/g)?.map(Number) || [1];
-  return { min: Math.min(...nums), max: Math.max(...nums) };
+// '2-6' -> {min:2,max:6} | '2+' -> {min:2,max:Infinity} | '1' -> {min:1,max:1}
+function teamRange(eligibility) {
+  if (!eligibility) return null;
+  const t = eligibility.teamSize;
+  if (!t) return eligibility.individualOk ? { min: 1, max: Infinity } : null;
+  const nums = t.match(/\d+/g)?.map(Number) || [];
+  if (!nums.length) return null;
+  const min = Math.min(...nums);
+  const max = t.includes('+') ? Infinity : Math.max(...nums);
+  return { min: eligibility.individualOk ? 1 : min, max };
 }
 
 /**
- * @param {object} profile - { division, interests[], skills[], major }
- * @param {object} prefs   - { teamPref: 'solo'|'small'|'large'|'any', effort: 'light'|'medium'|'heavy'|'any' }
+ * @param {object} profile - { division, interests[] }
+ * @param {object} prefs   - { teamPref: 'solo'|'small'|'large'|'any' }
  * @returns ranked [{ event, pct, reasons[] }]
  */
 export function recommend(profile, prefs = {}) {
@@ -54,57 +60,42 @@ export function recommend(profile, prefs = {}) {
   for (const event of pool) {
     let score = 0;
     const reasons = [];
-    const blob = blobFor(event);
+    const name = event.name.toLowerCase();
+    const category = event.category.toLowerCase();
 
     for (const interest of profile.interests || []) {
       const keywords = INTEREST_KEYWORDS[interest] || [interest.toLowerCase()];
-      if (keywords.some((k) => blob.includes(k))) {
-        score += 3;
-        reasons.push(`Matches your interest in ${interest.toLowerCase()}`);
-      }
-    }
-
-    for (const skill of profile.skills || []) {
-      if (event.skills.some((s) => s.toLowerCase() === skill.toLowerCase())) {
+      if (keywords.some((k) => name.includes(k))) {
+        score += 4;
+        reasons.push(`This event is ${interest.toLowerCase()}`);
+      } else if (keywords.some((k) => category.includes(k))) {
         score += 2;
-        reasons.push(`Uses a skill you already have: ${skill}`);
+        reasons.push(`It's in ${event.category}, which fits ${interest.toLowerCase()}`);
       }
     }
 
-    if (profile.major && profile.major !== 'Undecided' && event.majors.includes(profile.major)) {
-      score += 4;
-      reasons.push(`Directly aligns with ${profile.major}`);
-    }
-
-    const { min, max } = parseTeamSize(event.teamSize);
-    if (prefs.teamPref === 'solo' && min === 1) {
-      score += 2;
-      reasons.push('Can be done solo, like you prefer');
-    } else if (prefs.teamPref === 'small' && min <= 3 && max <= 4) {
-      score += 2;
-      reasons.push('Fits your small-team preference');
-    } else if (prefs.teamPref === 'large' && max >= 5) {
-      score += 2;
-      reasons.push('Supports the bigger team you want');
-    }
-
-    if (prefs.effort === 'light' && event.difficulty <= 2) {
-      score += 1;
-      reasons.push('Lighter time commitment');
-    } else if (prefs.effort === 'medium' && event.difficulty === 3) {
-      score += 1;
-      reasons.push('Moderate time commitment, as requested');
-    } else if (prefs.effort === 'heavy' && event.difficulty >= 4) {
-      score += 1;
-      reasons.push('A deep project worth the hours you can give');
+    const range = teamRange(event.eligibility);
+    if (range && prefs.teamPref && prefs.teamPref !== 'any') {
+      if (prefs.teamPref === 'solo' && range.min === 1) {
+        score += 3;
+        reasons.push('You can enter this one solo');
+      } else if (prefs.teamPref === 'small' && range.min <= 3 && range.max <= 4) {
+        score += 3;
+        reasons.push('Fits your small-team preference');
+      } else if (prefs.teamPref === 'large' && range.max >= 5) {
+        score += 3;
+        reasons.push('Supports the bigger team you want');
+      }
     }
 
     if (score > 0) {
-      const pct = Math.min(98, 35 + score * 4);
+      const pct = Math.min(98, 40 + score * 6);
       results.push({ event, pct, reasons: [...new Set(reasons)] });
     }
   }
 
-  results.sort((a, b) => b.pct - a.pct);
-  return results.slice(0, 6);
+  results.sort(
+      (a, b) => b.pct - a.pct || b.reasons.length - a.reasons.length || a.event.name.localeCompare(b.event.name)
+  );
+  return results.slice(0, 8);
 }

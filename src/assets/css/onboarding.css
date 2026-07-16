@@ -1,0 +1,32 @@
+.onb {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 28px 18px 60px;
+}
+
+.onb-hero {
+  background: var(--navy-700);
+  border: 1px solid var(--navy-500);
+  border-bottom: 4px solid var(--red-600);
+  border-radius: var(--radius);
+  color: #fff;
+  padding: 22px 20px;
+  margin-bottom: 18px;
+}
+
+.onb-hero h1 { color: #fff; margin: 0 0 4px; }
+
+.onb-hero p { margin: 0; opacity: 0.85; font-size: 0.9rem; }
+
+.dots { display: flex; gap: 6px; margin: 16px 0; }
+
+.dots span {
+  height: 5px;
+  flex: 1;
+  border-radius: 999px;
+  background: var(--surface-3);
+}
+
+.dots span.on { background: var(--red-400); }
+
+.onb-nav { display: flex; gap: 10px; margin-top: 18px; }

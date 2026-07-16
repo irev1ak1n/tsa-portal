@@ -5,7 +5,7 @@ import { Icon, TabBadge } from './UI.jsx';
 const TABS = [
     { to: '/', label: 'Home', icon: 'home', end: true },
     { to: '/events', label: 'Events', icon: 'grid' },
-    { to: '/chats', label: 'Chats', icon: 'funnel', badge: true },
+    { to: '/chats', label: 'Chats', icon: 'send', badge: true },
     { to: '/team', label: 'Team', icon: 'users' },
     { to: '/profile', label: 'Profile', icon: 'user' },
 ];

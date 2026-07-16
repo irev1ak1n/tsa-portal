@@ -1,0 +1,49 @@
+:root {
+  color-scheme: dark;
+
+  --bg: #0c1014;
+  --surface: #151c26;
+  --surface-2: #1d2733;
+  --surface-3: #263242;
+  --line: #2a3646;
+  --line-strong: #3a4860;
+  --tint: #1a2740;
+  --tint-line: #27395c;
+
+  --navy-900: #0d1b33;
+  --navy-800: #122748;
+  --navy-700: #16305c;
+  --navy-600: #1e3f78;
+  --navy-500: #2d5aa8;
+  --navy-300: #7ab0f7;
+  --navy-200: #a9c8f0;
+
+  --red-700: #a80d1f;
+  --red-600: #ce1126;
+  --red-500: #e01e35;
+  --red-400: #ff5a6e;
+
+  --ink: #e9eef6;
+  --ink-hi: #f5f8fc;
+  --muted: #8d9aae;
+
+  --ok: #4ade9b;
+  --ok-bg: #10291f;
+  --warn: #f0c04a;
+  --warn-bg: #2b2210;
+
+  --radius: 14px;
+  --radius-sm: 9px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 30px -14px rgba(0, 0, 0, 0.85);
+
+  --font-display: 'Chakra Petch', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --ig-blue: #4250f7;
+  --ig-link: #788ee2;
+  --ig-ink: #f5f5f5;
+
+  --nav-h: 62px;
+}

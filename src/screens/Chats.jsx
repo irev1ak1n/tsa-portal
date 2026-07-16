@@ -1,118 +1,70 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
-import { Icon, Empty } from '../components/UI.jsx';
-
-function Avatar({ name, kind }) {
-    const initials = name
-        .split(' ')
-        .slice(0, 2)
-        .map((w) => w[0])
-        .join('')
-        .toUpperCase();
-    return <span className={`avatar ${kind === 'chapter' ? 'avatar-chapter' : ''}`}>{initials}</span>;
-}
+import { SUGGESTED_ACCOUNTS, initialsOf } from '../data/people.js';
+import { Icon } from '../components/UI.jsx';
 
 export default function Chats() {
-    const { chats, unreadFor, sendMessage, markThreadRead } = useApp();
+    const { chats, unreadFor, follows, hiddenSuggestions, toggleFollow, hideSuggestion } = useApp();
     const navigate = useNavigate();
-    const [openId, setOpenId] = useState(null);
-    const [draft, setDraft] = useState('');
-    const endRef = useRef(null);
+    const [q, setQ] = useState('');
 
-    const thread = chats.find((t) => t.id === openId) || null;
+    const query = q.trim();
+    const threads = query
+        ? chats.filter((t) => t.name.toLowerCase().includes(query.toLowerCase()))
+        : chats;
 
-    useEffect(() => {
-        if (openId) markThreadRead(openId);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [openId]);
+    const suggestions = SUGGESTED_ACCOUNTS.filter((a) => !hiddenSuggestions.includes(a.id));
 
-    useEffect(() => {
-        endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, [thread?.messages.length]);
-
-    function send(e) {
+    function askAi(e) {
         e.preventDefault();
-        const text = draft.trim();
-        if (!text || !openId) return;
-        sendMessage(openId, text);
-        setDraft('');
-    }
-
-    if (thread) {
-        return (
-            <>
-                <div className="section" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <button className="btn ghost small" onClick={() => setOpenId(null)}>
-                        ← Back
-                    </button>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                        <Avatar name={thread.name} kind={thread.kind} />
-                        <div style={{ minWidth: 0 }}>
-                            <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{thread.name}</div>
-                            <div className="small muted">{thread.sub}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="notice info">
-                    <span aria-hidden="true">ⓘ</span>
-                    <span>
-            Demo chat: messages are saved on this device only and are not delivered to anyone. Real messaging needs
-            the backend — see the README roadmap.
-          </span>
-                </div>
-
-                <div className="chat section">
-                    {thread.messages.map((m) => (
-                        <div className={`bubble ${m.from === 'me' ? 'user' : 'coach'}`} key={m.id}>
-                            {m.from !== 'me' && thread.kind !== 'direct' && <div className="msg-from">{m.from}</div>}
-                            <div>{m.text}</div>
-                            <div className="msg-at">{m.at}</div>
-                        </div>
-                    ))}
-                    <div ref={endRef} />
-                </div>
-
-                <form className="chatbar" onSubmit={send}>
-                    <input
-                        value={draft}
-                        onChange={(e) => setDraft(e.target.value)}
-                        placeholder={`Message ${thread.name}…`}
-                        aria-label="Message"
-                    />
-                    <button type="submit">Send</button>
-                </form>
-            </>
-        );
+        if (!query) return;
+        navigate('/coach', { state: { q: query } });
     }
 
     return (
         <>
-            <div className="section">
-                <div className="eyebrow">Messages</div>
-                <h1>Chats</h1>
+            <form className="ig-search" onSubmit={askAi}>
+                <Icon name="search" size={17} />
+                <input
+                    value={q}
+                    onChange={(e) => setQ(e.target.value)}
+                    placeholder="Search or ask AI"
+                    aria-label="Search or ask AI"
+                />
+            </form>
+
+            {query && (
+                <button className="ask-ai-row" onClick={askAi}>
+          <span className="avatar avatar-coach">
+            <Icon name="spark" size={16} />
+          </span>
+                    <span style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
+            <span className="thread-name">Ask AI — "{query}"</span>
+            <span className="thread-last">Answers cite the rulebook</span>
+          </span>
+                    <span className="tag red">Ask</span>
+                </button>
+            )}
+
+            <div className="section-head" style={{ marginTop: 4 }}>
+                <h2 className="ig-head">Messages</h2>
+                <button className="link linkbtn" onClick={() => navigate('/chats/new')}>
+                    Requests
+                </button>
             </div>
 
-            <div className="section card flat coach-entry" onClick={() => navigate('/coach')} role="button" tabIndex={0}
-                 onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate('/coach')}>
-        <span className="avatar avatar-coach">
-          <Icon name="spark" size={17} />
-        </span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                    <div className="thread-name">AI Competition Coach</div>
-                    <div className="small muted">Ask about rules — answers cite the rulebook</div>
-                </div>
-                <span className="tag red">Ask</span>
-            </div>
-
-            {chats.length === 0 ? (
-                <div className="card">
-                    <Empty ico="💬" title="No chats yet" sub="Your team and chapter conversations will show up here." />
+            {threads.length === 0 ? (
+                <div className="ig-empty">
+                    <h3>No messages yet</h3>
+                    <p>Chats will appear here after you send or receive a message.</p>
+                    <button className="ig-cta" onClick={() => navigate('/chats/new')}>
+                        Get started
+                    </button>
                 </div>
             ) : (
-                <div className="card">
-                    {chats.map((t) => {
+                <div className="card" style={{ marginBottom: 22 }}>
+                    {threads.map((t) => {
                         const n = unreadFor(t.id);
                         const last = t.messages[t.messages.length - 1];
                         return (
@@ -121,17 +73,17 @@ export default function Chats() {
                                 key={t.id}
                                 role="button"
                                 tabIndex={0}
-                                onClick={() => setOpenId(t.id)}
-                                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setOpenId(t.id)}
+                                onClick={() => navigate(`/chats/${t.id}`)}
+                                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate(`/chats/${t.id}`)}
                             >
-                                <Avatar name={t.name} kind={t.kind} />
+                                <span className="avatar">{initialsOf(t.name)}</span>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div className="thread-top">
                                         <span className={`thread-name ${n > 0 ? 'unread' : ''}`}>{t.name}</span>
-                                        <span className="thread-at">{last?.at}</span>
+                                        <span className="thread-at">{last?.at || ''}</span>
                                     </div>
                                     <div className="thread-last">
-                                        {last ? `${last.from === 'me' ? 'You: ' : ''}${last.text}` : t.sub}
+                                        {last ? `${last.from === 'me' ? 'You: ' : ''}${last.text}` : 'Say hi 👋'}
                                     </div>
                                 </div>
                                 {n > 0 && <span className="thread-count">{n > 9 ? '9+' : n}</span>}
@@ -140,6 +92,47 @@ export default function Chats() {
                     })}
                 </div>
             )}
+
+            <hr className="ig-divider" />
+
+            <div className="section-head">
+                <h2 className="ig-head">Accounts to follow</h2>
+                <button className="link linkbtn">See all</button>
+            </div>
+
+            <div className="acct-list">
+                {suggestions.length === 0 && (
+                    <p className="muted small" style={{ margin: 0 }}>
+                        No more suggestions right now.
+                    </p>
+                )}
+                {suggestions.map((a) => {
+                    const following = follows.includes(a.id);
+                    return (
+                        <div className="acct-row" key={a.id}>
+                            <span className="avatar">{initialsOf(a.name)}</span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <div className="acct-handle">{a.handle}</div>
+                                <div className="acct-name">{a.name}</div>
+                                <div className="acct-meta">{a.meta}</div>
+                            </div>
+                            <button
+                                className={`btn-follow ${following ? 'on' : ''}`}
+                                onClick={() => toggleFollow(a.id)}
+                            >
+                                {following ? 'Following' : 'Follow'}
+                            </button>
+                            <button className="acct-x" onClick={() => hideSuggestion(a.id)} aria-label={`Dismiss ${a.handle}`}>
+                                <Icon name="x" size={15} />
+                            </button>
+                        </div>
+                    );
+                })}
+            </div>
+
+            <p className="small muted" style={{ marginTop: 12 }}>
+                Sample accounts — edit them in <span className="mono">src/data/people.js</span>.
+            </p>
         </>
     );
 }
