@@ -1,0 +1,169 @@
+.pf-top {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.pf-user {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 0;
+    color: var(--ig-ink);
+}
+.pf-user svg { flex-shrink: 0; opacity: 0.9; }
+
+.pf-username {
+    font-family: var(--font-system);
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 22px;
+    color: var(--ig-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pf-menu {
+    grid-column: 3;
+    justify-self: end;
+    border: 0;
+    background: none;
+    color: var(--ig-ink);
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    border-radius: 8px;
+}
+.pf-menu:hover { background: var(--surface-2); }
+
+.pf-sheet {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 6px 14px 14px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+}
+
+.pf-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+}
+.pf-toggle-label { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pf-toggle-t {
+    font-family: var(--font-system);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+}
+.pf-toggle input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--ig-blue);
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.pf-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 44px;
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+.pf-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 8px;
+    background: var(--surface-3);
+    color: var(--ig-ink);
+    font-family: var(--font-system);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 18px;
+    padding: 9px 12px;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+.pf-btn:hover { background: var(--line-strong); }
+.pf-btn-icon { padding: 9px 0; }
+.pf-btn-icon.on { background: var(--navy-600); }
+
+.pf-discover {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+}
+
+.pf-card {
+    position: relative;
+    flex: 0 0 152px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 10px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+}
+
+.pf-card-x {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    border-radius: 6px;
+}
+.pf-card-x:hover { color: var(--ink); background: var(--surface-2); }
+
+.pf-card-avatar {
+    width: 58px;
+    height: 58px;
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+.pf-card-name {
+    font-family: var(--font-system);
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 17px;
+    color: var(--ig-ink);
+}
+
+.pf-card-meta {
+    font-family: var(--font-system);
+    font-size: 11px;
+    line-height: 14px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.pf-card .btn-follow {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 13px;
+}

@@ -64,9 +64,6 @@ export default function Dashboard() {
               );
             })}
           </div>
-          <p className="small muted" style={{ marginTop: 6 }}>
-            Days remaining · sample dates — edit in <span className="mono">src/data/meta.js</span>
-          </p>
         </div>
 
         {/* My events */}

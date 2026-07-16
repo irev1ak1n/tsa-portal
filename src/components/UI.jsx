@@ -2,82 +2,85 @@
 // so the app has zero icon dependencies.
 
 const PATHS = {
-  home: 'M3 10.5 12 3l9 7.5M5 9.5V21h5v-6h4v6h5V9.5',
-  grid: 'M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z',
-  spark: 'M12 2v4M12 18v4M2 12h4M18 12h4M5 5l2.8 2.8M16.2 16.2 19 19M19 5l-2.8 2.8M7.8 16.2 5 19M12 8.5 13.2 11l2.6 1-2.6 1L12 15.5 10.8 13l-2.6-1 2.6-1z',
-  chat: 'M21 12a8 8 0 0 1-8 8H4l2-3.2A8 8 0 1 1 21 12z',
-  users: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M15 3.13a4 4 0 0 1 0 7.75',
-  user: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
-  plus: 'M12 5v14M5 12h14',
-  x: 'M18 6 6 18M6 6l12 12',
-  search: 'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3',
-  send: 'M22 2 11 13M22 2l-7 20-4-9-9-4z',
-  check: 'M20 6 9 17l-5-5',
-  trophy: 'M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0zM7 5H4a1 1 0 0 0-1 1c0 2.5 1.5 4 4 4M17 5h3a1 1 0 0 1 1 1c0 2.5-1.5 4-4 4',
-  cal: 'M8 2v4M16 2v4M3 9h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
-  bell: 'M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',
-  book: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5',
-  funnel: 'M3.6 4.5h16.8a1.1 1.1 0 0 1 .84 1.81L14.6 14.3v5.2a1.1 1.1 0 0 1-.6.98l-3 1.53a1.1 1.1 0 0 1-1.6-.98V14.3L2.76 6.31A1.1 1.1 0 0 1 3.6 4.5z',
+    home: 'M3 10.5 12 3l9 7.5M5 9.5V21h5v-6h4v6h5V9.5',
+    grid: 'M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z',
+    spark: 'M12 2v4M12 18v4M2 12h4M18 12h4M5 5l2.8 2.8M16.2 16.2 19 19M19 5l-2.8 2.8M7.8 16.2 5 19M12 8.5 13.2 11l2.6 1-2.6 1L12 15.5 10.8 13l-2.6-1 2.6-1z',
+    chat: 'M21 12a8 8 0 0 1-8 8H4l2-3.2A8 8 0 1 1 21 12z',
+    users: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M15 3.13a4 4 0 0 1 0 7.75',
+    user: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+    plus: 'M12 5v14M5 12h14',
+    x: 'M18 6 6 18M6 6l12 12',
+    search: 'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3',
+    send: 'M22 2 11 13M22 2l-7 20-4-9-9-4z',
+    check: 'M20 6 9 17l-5-5',
+    trophy: 'M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0zM7 5H4a1 1 0 0 0-1 1c0 2.5 1.5 4 4 4M17 5h3a1 1 0 0 1 1 1c0 2.5-1.5 4-4 4',
+    cal: 'M8 2v4M16 2v4M3 9h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
+    bell: 'M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',
+    book: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5',
+    funnel: 'M3.6 4.5h16.8a1.1 1.1 0 0 1 .84 1.81L14.6 14.3v5.2a1.1 1.1 0 0 1-.6.98l-3 1.53a1.1 1.1 0 0 1-1.6-.98V14.3L2.76 6.31A1.1 1.1 0 0 1 3.6 4.5z',
+    lock: 'M5 11h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM7 11V7a5 5 0 0 1 10 0v4',
+    menu: 'M3 6h18M3 12h18M3 18h18',
+    'user-plus': 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM19 8v6M22 11h-6',
 };
 
 export function Icon({ name, size = 22 }) {
-  return (
-      <svg
-          width={size}
-          height={size}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-      >
-        <path d={PATHS[name] || PATHS.spark} />
-      </svg>
-  );
+    return (
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+        >
+            <path d={PATHS[name] || PATHS.spark} />
+        </svg>
+    );
 }
 
 export function TabBadge({ count }) {
-  if (!count || count < 1) return null;
-  return (
-      <span className="tab-badge" aria-label={`${count} unread`}>
+    if (!count || count < 1) return null;
+    return (
+        <span className="tab-badge" aria-label={`${count} unread`}>
       <span className="tab-badge-n">{count > 9 ? '9+' : count}</span>
     </span>
-  );
+    );
 }
 
 export function Stars({ n }) {
-  return (
-      <span className="stars" aria-label={`Difficulty ${n} of 5`}>
+    return (
+        <span className="stars" aria-label={`Difficulty ${n} of 5`}>
       {[1, 2, 3, 4, 5].map((i) => (
           <span key={i} className={i <= n ? '' : 'off'}>
           ★
         </span>
       ))}
     </span>
-  );
+    );
 }
 
 export function Progress({ pct }) {
-  return (
-      <div className="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
-        <span style={{ width: `${pct}%` }} />
-      </div>
-  );
+    return (
+        <div className="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
+            <span style={{ width: `${pct}%` }} />
+        </div>
+    );
 }
 
 export function Cite({ id }) {
-  return <span className="cite">{id}</span>;
+    return <span className="cite">{id}</span>;
 }
 
 export function Empty({ ico, title, sub, action }) {
-  return (
-      <div className="empty">
-        <div className="e-ico">{ico}</div>
-        <h3>{title}</h3>
-        <p>{sub}</p>
-        {action}
-      </div>
-  );
+    return (
+        <div className="empty">
+            <div className="e-ico">{ico}</div>
+            <h3>{title}</h3>
+            <p>{sub}</p>
+            {action}
+        </div>
+    );
 }

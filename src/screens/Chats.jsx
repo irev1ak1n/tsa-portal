@@ -129,10 +129,6 @@ export default function Chats() {
                     );
                 })}
             </div>
-
-            <p className="small muted" style={{ marginTop: 12 }}>
-                Sample accounts — edit them in <span className="mono">src/data/people.js</span>.
-            </p>
         </>
     );
 }
