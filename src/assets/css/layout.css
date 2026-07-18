@@ -1,19 +1,7 @@
 .shell { min-height: 100vh; display: flex; flex-direction: column; }
 
-.topbar {
-  background: var(--navy-700);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 18px;
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  border-bottom: 3px solid var(--red-600);
-}
 
-.topbar .wordmark {
+.wordmark {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1.05rem;
@@ -35,21 +23,14 @@
   letter-spacing: 0.14em;
 }
 
-.topbar .spacer { flex: 1; }
 
-.topbar .who {
-  font-size: 0.8rem;
-  opacity: 0.85;
-  font-family: var(--font-mono);
-  letter-spacing: 0.02em;
-}
 
 .content {
   flex: 1;
   width: 100%;
   max-width: 1060px;
   margin: 0 auto;
-  padding: 20px 16px calc(var(--nav-h) + 28px);
+  padding: calc(18px + env(safe-area-inset-top)) 16px calc(var(--nav-h) + 28px);
 }
 
 .tabbar {
@@ -87,7 +68,6 @@
 
 @media (min-width: 920px) {
   .shell { flex-direction: row; }
-  .topbar { display: none; }
   .rail {
     width: 218px;
     background: var(--navy-700);

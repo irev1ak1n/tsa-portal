@@ -13,7 +13,8 @@ function handleOf(profile) {
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { profile, saveProfile, resetAll, follows, hiddenSuggestions, toggleFollow, hideSuggestion } = useApp();
+  const { profile, saveProfile, resetAll, myEvents, follows, hiddenSuggestions, toggleFollow, hideSuggestion } =
+      useApp();
   const [menuOpen, setMenuOpen] = useState(false);
   const [discoverOpen, setDiscoverOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -27,6 +28,64 @@ export default function Profile() {
 
   const place = [profile.city, profile.state].filter(Boolean).join(', ');
   const subline = [profile.school || profile.chapter, place].filter(Boolean).join(' · ');
+
+  const steps = [
+    {
+      id: 'avatar',
+      done: !!profile.avatar,
+      icon: 'user',
+      title: 'Add profile picture',
+      desc: 'Choose a photo so teammates recognize you.',
+      cta: profile.avatar ? 'Change photo' : 'Add picture',
+      action: () => avatarRef.current?.click(),
+    },
+    {
+      id: 'headline',
+      done: !!profile.headline,
+      icon: 'spark',
+      title: 'Add a headline',
+      desc: 'One line under your name — what you do in TSA.',
+      cta: profile.headline ? 'Edit headline' : 'Add headline',
+      action: () => navigate('/onboarding'),
+    },
+    {
+      id: 'cover',
+      done: !!profile.cover,
+      icon: 'camera',
+      title: 'Add a cover photo',
+      desc: 'Make the top of your profile yours.',
+      cta: profile.cover ? 'Change cover' : 'Add cover',
+      action: () => coverRef.current?.click(),
+    },
+    {
+      id: 'events',
+      done: myEvents.length > 0,
+      icon: 'grid',
+      title: 'Pick your events',
+      desc: 'Add the TSA events you are competing in this season.',
+      cta: myEvents.length ? 'Browse more' : 'Browse events',
+      action: () => navigate('/events'),
+    },
+    {
+      id: 'skills',
+      done: (profile.skills || []).length > 0,
+      icon: 'check',
+      title: 'Add your skills',
+      desc: 'The recommender matches events to what you can already do.',
+      cta: (profile.skills || []).length ? 'Edit skills' : 'Add skills',
+      action: () => navigate('/onboarding'),
+    },
+    {
+      id: 'follow',
+      done: follows.length > 0,
+      icon: 'users',
+      title: 'Find people to follow',
+      desc: 'Follow students and chapters you care about.',
+      cta: 'Find more',
+      action: () => setDiscoverOpen(true),
+    },
+  ];
+  const doneCount = steps.filter((t) => t.done).length;
 
   async function pickImage(e, kind) {
     const file = e.target.files?.[0];
@@ -180,27 +239,36 @@ export default function Profile() {
             </div>
         )}
 
-        <div className="section card">
-          <h3>Interests</h3>
-          <div className="chip-row" style={{ marginBottom: 14 }}>
-            {(profile.interests || []).map((i) => (
-                <span key={i} className="chip static">
-              {i}
-            </span>
-            ))}
-          </div>
-          <h3>Skills</h3>
-          <div className="chip-row" style={{ marginBottom: 14 }}>
-            {(profile.skills || []).length === 0 && <span className="muted small">None added yet</span>}
-            {(profile.skills || []).map((s) => (
-                <span key={s} className="chip static">
-              {s}
-            </span>
-            ))}
-          </div>
-          <h3>Intended major</h3>
-          <span className="chip static">{profile.major}</span>
-        </div>
+        {doneCount < steps.length && (
+            <div className="section">
+              <h2 className="ig-head cp-title-head">Complete your profile</h2>
+              <p className="cp-count">
+                <strong>
+                  {doneCount} of {steps.length}
+                </strong>{' '}
+                <span>Complete</span>
+              </p>
+              <div className="cp-row">
+                {steps.map((t) => (
+                    <div className={`cp-card ${t.done ? 'done' : ''}`} key={t.id}>
+                <span className="cp-ico">
+                  <Icon name={t.icon} size={26} />
+                  {t.done && (
+                      <span className="cp-check">
+                      <Icon name="check" size={11} />
+                    </span>
+                  )}
+                </span>
+                      <div className="cp-name">{t.title}</div>
+                      <div className="cp-desc">{t.desc}</div>
+                      <button className={`cp-btn ${t.done ? '' : 'primary'}`} onClick={t.action}>
+                        {t.cta}
+                      </button>
+                    </div>
+                ))}
+              </div>
+            </div>
+        )}
       </>
   );
 }

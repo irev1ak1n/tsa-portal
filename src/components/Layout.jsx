@@ -47,14 +47,7 @@ export default function Layout() {
                 <div className="who">{who}</div>
             </aside>
 
-            {/* Mobile topbar */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                <header className="topbar">
-                    <Wordmark />
-                    <div className="spacer" />
-                    <div className="who">{profile ? profile.division + ' · ' + profile.state : ''}</div>
-                </header>
-
                 <main className="content">
                     <Outlet />
                 </main>
