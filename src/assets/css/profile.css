@@ -1,376 +1,132 @@
-.pf-top {
-    display: grid;
-    grid-template-columns: 40px 1fr 40px;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 18px;
-}
+/* ============================================================
+   Profile is now the account/settings surface.
+   The Instagram-style cover, scrim, discover cards and
+   "complete your profile" checklist are gone — this file is a
+   fraction of its old size. Row styles are reused from
+   settings.css (.set-card / .set-row / .set-label / …).
+   ============================================================ */
 
-.pf-user {
+.pf-head {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 7px;
-    min-width: 0;
-    color: var(--ig-ink);
-}
-.pf-user svg { flex-shrink: 0; opacity: 0.9; }
-
-.pf-username {
-    font-family: var(--font-system);
-    font-weight: 700;
-    font-size: 17px;
-    line-height: 22px;
-    color: var(--ig-ink);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.pf-menu {
-    grid-column: 3;
-    justify-self: end;
-    border: 0;
-    background: none;
-    color: var(--ig-ink);
-    cursor: pointer;
-    padding: 6px;
-    display: flex;
-    border-radius: 8px;
-}
-.pf-menu:hover { background: var(--surface-2); }
-
-.pf-sheet {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 6px 14px 14px;
-    margin-bottom: 18px;
-    box-shadow: var(--shadow);
-}
-
-.pf-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     gap: 14px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--line);
-    cursor: pointer;
-}
-.pf-toggle-label { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.pf-toggle-t {
-    font-family: var(--font-system);
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--ink);
-}
-.pf-toggle input {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--ig-blue);
-    flex-shrink: 0;
-    cursor: pointer;
+    margin-bottom: 22px;
 }
 
-.pf-cover {
+.pf-av-wrap {
     position: relative;
-    height: 128px;
-    margin: 0 -16px;
-    overflow: hidden;
-    background: var(--surface);
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
 }
-@media (min-width: 920px) {
-    .pf-cover { margin: 0 -32px; }
-}
-.pf-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.pf-cover-empty {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--navy-700), var(--navy-900) 60%, var(--surface));
-}
-.pf-cam {
-    position: absolute;
-    top: 10px;
-    right: 16px;
-    width: 34px;
-    height: 34px;
-    border: 0;
-    border-radius: 50%;
-    background: rgba(12, 16, 20, 0.66);
-    color: var(--ig-ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-}
-.pf-cam:hover { background: rgba(12, 16, 20, 0.85); }
 
-.pf-avatar-row {
-    display: flex;
-    align-items: flex-start;
-    margin-top: -44px;
-    margin-bottom: 14px;
-}
-.pf-avatar-wrap { position: relative; width: 88px; height: 88px; }
-.pf-avatar {
-    width: 88px;
-    height: 88px;
+.pf-av {
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     object-fit: cover;
     display: block;
-    border: 3px solid var(--bg);
     background: var(--navy-600);
 }
-.pf-avatar-fallback {
+
+.pf-av-fallback {
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.6rem;
+    font-size: 1.15rem;
     color: #fff;
 }
-.pf-avatar-btn {
+
+.pf-av-btn {
     position: absolute;
     right: -2px;
-    bottom: 2px;
-    width: 28px;
-    height: 28px;
+    bottom: -2px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     border: 2px solid var(--bg);
-    background: var(--ig-blue);
-    color: #fff;
+    background: var(--surface-3);
+    color: var(--ig-ink);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
 }
-.pf-avatar-btn:hover { opacity: 0.88; }
+.pf-av-btn:hover {
+    background: var(--line-strong);
+}
 
-.pf-identity { margin-bottom: 18px; }
-.pf-name {
+.pf-head-text {
+    min-width: 0;
+}
+
+.pf-head-name {
     font-family: var(--font-system);
     font-weight: 700;
-    font-size: 24px;
-    line-height: 30px;
+    font-size: 19px;
+    line-height: 24px;
     color: var(--ig-ink);
-    letter-spacing: normal;
-    text-transform: none;
-    margin: 0 0 4px;
 }
-.pf-headline {
-    font-family: var(--font-system);
-    font-size: 15px;
-    line-height: 20px;
-    color: var(--ink);
-    margin: 0 0 3px;
-}
-.pf-subline {
-    font-family: var(--font-system);
-    font-size: 14px;
-    line-height: 18px;
-    color: var(--muted);
-    margin: 0 0 8px;
-}
-.pf-stats {
+
+.pf-head-handle {
     font-family: var(--font-system);
     font-size: 14px;
     line-height: 18px;
     color: var(--ig-link);
-    margin: 0;
-    display: flex;
-    gap: 6px;
-}
-.pf-stats strong { font-weight: 600; }
-.pf-dot { color: var(--muted); }
-
-.pf-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr 44px;
-    gap: 8px;
-    margin-bottom: 22px;
 }
 
-.pf-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    border-radius: 8px;
-    background: var(--surface-3);
-    color: var(--ig-ink);
+.pf-head-sub {
     font-family: var(--font-system);
-    font-weight: 600;
+    font-size: 13px;
+    line-height: 17px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+/* rows that only display a value — no hover affordance */
+.set-row.pf-static {
+    cursor: default;
+}
+.set-row.pf-static:hover {
+    background: none;
+}
+
+.pf-change {
+    font-family: var(--font-system);
     font-size: 14px;
-    line-height: 18px;
-    padding: 9px 12px;
-    cursor: pointer;
-    transition: background 0.12s ease;
-}
-.pf-btn:hover { background: var(--line-strong); }
-.pf-btn-icon { padding: 9px 0; }
-.pf-btn-icon.on { background: var(--navy-600); }
-
-.pf-discover {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 6px;
+    font-weight: 600;
+    color: var(--ig-link);
+    flex-shrink: 0;
 }
 
-.pf-card {
-    position: relative;
-    flex: 0 0 152px;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 18px 10px 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    text-align: center;
-}
-
-.pf-card-x {
-    position: absolute;
-    top: 6px;
-    right: 6px;
+.pf-rowbtn {
     border: 0;
     background: none;
     color: var(--muted);
     cursor: pointer;
-    padding: 4px;
+    padding: 2px;
     display: flex;
-    border-radius: 6px;
 }
-.pf-card-x:hover { color: var(--ink); background: var(--surface-2); }
-
-.pf-card-avatar {
-    width: 58px;
-    height: 58px;
-    font-size: 1.1rem;
-    margin-bottom: 2px;
-}
-
-.pf-card-name {
-    font-family: var(--font-system);
-    font-weight: 700;
-    font-size: 13px;
-    line-height: 17px;
-    color: var(--ig-ink);
-}
-
-.pf-card-meta {
-    font-family: var(--font-system);
-    font-size: 11px;
-    line-height: 14px;
-    color: var(--muted);
-    margin-bottom: 4px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.pf-card .btn-follow {
-    width: 100%;
-    padding: 6px 10px;
-    font-size: 13px;
-}
-
-.cp-title-head { margin-bottom: 2px; }
-
-.cp-count {
-    font-family: var(--font-system);
-    font-size: 14px;
-    line-height: 18px;
-    margin: 0 0 12px;
-}
-.cp-count strong { color: var(--ig-ink); font-weight: 600; }
-.cp-count span { color: var(--muted); }
-
-.cp-row {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 6px;
-}
-
-.cp-card {
-    flex: 0 0 190px;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 18px 14px 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.cp-ico {
-    position: relative;
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    border: 2px solid var(--line-strong);
+.pf-rowbtn:hover {
     color: var(--ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+}
+
+/* inline editor inside a card */
+.pf-edit {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+}
+.pf-edit:last-child {
+    border-bottom: 0;
+}
+.pf-edit .field:last-of-type {
     margin-bottom: 10px;
 }
-.cp-card.done .cp-ico { border-color: var(--ink); }
 
-.cp-check {
-    position: absolute;
-    right: -4px;
-    bottom: -2px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--ok);
-    color: #0c1014;
-    border: 2px solid var(--surface);
+.pf-edit-nav {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    gap: 8px;
+    justify-content: flex-end;
 }
-
-.cp-name {
-    font-family: var(--font-system);
-    font-weight: 700;
-    font-size: 14px;
-    line-height: 18px;
-    color: var(--ig-ink);
-    margin-bottom: 4px;
-}
-
-.cp-desc {
-    font-family: var(--font-system);
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--muted);
-    margin-bottom: 12px;
-    flex: 1;
-}
-
-.cp-btn {
-    border: 0;
-    border-radius: 8px;
-    padding: 8px 14px;
-    background: var(--surface-3);
-    color: var(--ig-ink);
-    font-family: var(--font-system);
-    font-weight: 600;
-    font-size: 13px;
-    line-height: 17px;
-    cursor: pointer;
-    width: 100%;
-}
-.cp-btn:hover { background: var(--line-strong); }
-.cp-btn.primary { background: var(--ig-blue); color: #fff; }
-.cp-btn.primary:hover { opacity: 0.88; background: var(--ig-blue); }

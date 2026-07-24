@@ -1,19 +1,3 @@
-// ============================================================
-// Image handling for profile photos.
-//
-// Everything is stored in localStorage as a data URL, and the
-// whole app state shares one ~5MB quota. A raw phone photo is
-// 3-5MB on its own, and base64 makes it ~33% bigger again - so
-// an unresized upload would blow the quota and silently break
-// saving for tasks, events and notes too.
-//
-// So: downscale and re-encode to JPEG before storing. A cover
-// lands around 60-120KB, an avatar around 10-25KB.
-//
-// When you add the backend, upload the original File to
-// storage instead and keep only the URL here.
-// ============================================================
-
 export const COVER_MAX = { w: 1080, h: 400 };
 export const AVATAR_MAX = { w: 320, h: 320 };
 
@@ -29,9 +13,6 @@ export function resizeImage(file, max, quality = 0.82) {
         img.onload = () => {
             URL.revokeObjectURL(url);
 
-            // Center-crop to the target aspect, then scale down. Fitting the
-            // whole photo inside the box instead would shrink a portrait or 4:3
-            // photo far below the display width and render blurry.
             const targetAspect = max.w / max.h;
             const srcAspect = img.width / img.height;
             let sw = img.width;

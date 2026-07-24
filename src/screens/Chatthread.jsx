@@ -14,7 +14,6 @@ export default function ChatThread() {
 
     useEffect(() => {
         if (thread) markThreadRead(thread.id);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     useEffect(() => {

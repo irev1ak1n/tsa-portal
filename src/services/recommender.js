@@ -1,16 +1,3 @@
-// ============================================================
-// Smart Event Recommender
-//
-// Matches the student's interests against the official event
-// names and their UI category. Every point produces a
-// human-readable reason, so students see WHY something matched.
-//
-// Team size comes from the official TSA eligibility chart, so
-// the "how do you like to work" preference is scored on real
-// data. Difficulty and required skills are NOT scored: those
-// live in the Competition Guides, which are not in this app.
-// ============================================================
-
 import { eventsForDivision } from '../data/events.js';
 
 const INTEREST_KEYWORDS = {
@@ -36,7 +23,6 @@ const INTEREST_KEYWORDS = {
   'Teaching': ['teacher', 'stories', 'education'],
 };
 
-// '2-6' -> {min:2,max:6} | '2+' -> {min:2,max:Infinity} | '1' -> {min:1,max:1}
 function teamRange(eligibility) {
   if (!eligibility) return null;
   const t = eligibility.teamSize;
@@ -48,11 +34,6 @@ function teamRange(eligibility) {
   return { min: eligibility.individualOk ? 1 : min, max };
 }
 
-/**
- * @param {object} profile - { division, interests[] }
- * @param {object} prefs   - { teamPref: 'solo'|'small'|'large'|'any' }
- * @returns ranked [{ event, pct, reasons[] }]
- */
 export function recommend(profile, prefs = {}) {
   const pool = eventsForDivision(profile.division || 'HS');
   const results = [];

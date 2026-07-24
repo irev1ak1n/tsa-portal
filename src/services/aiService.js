@@ -1,33 +1,3 @@
-// ============================================================
-// aiService.js — where the REAL AI plugs in later
-//
-// v1 ships with an offline coach (services/coach.js) that
-// searches the built-in rulebook and quotes sections with
-// citations. When you build your backend ("we'll make
-// database later"), upgrade the coach like this:
-//
-//   1. NEVER put an AI API key in this frontend code. Anyone
-//      can open DevTools and steal it. Keys live on a server.
-//
-//   2. Build a tiny backend endpoint, e.g. POST /api/coach
-//      (Node/Express, Next.js API route, PHP, anything).
-//      The frontend sends { question, ruleSections } to it.
-//
-//   3. The backend calls an LLM API (for example Anthropic's
-//      Messages API, https://docs.claude.com) with a prompt
-//      like the one below, using the API key stored in a
-//      server-side environment variable, and returns the text.
-//
-//   4. Flip USE_REMOTE_AI to true. The Coach screen already
-//      falls back to the offline engine if this fails.
-//
-// This is retrieval-augmented generation (RAG) in miniature:
-// coach.js finds the relevant rule sections, the LLM writes a
-// grounded answer FROM those sections, and you display the
-// citations. That grounding is your pitch to TSA: the coach
-// cites the rulebook instead of guessing.
-// ============================================================
-
 export const USE_REMOTE_AI = false;
 
 const SYSTEM_PROMPT = `You are the TSA Competition Coach. Answer the student's question

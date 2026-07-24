@@ -1,16 +1,3 @@
-// ============================================================
-// AI Competition Coach — v1 engine
-//
-// This version is fully offline: it answers by searching the
-// built-in rulebook + event data and quoting the sections it
-// found, with citations. That makes the demo honest (it never
-// invents rules) and free to run.
-//
-// When you add a backend, swap composeAnswer() for a real LLM
-// call that receives these same matched sections as context
-// (see services/aiService.js). The UI won't need to change.
-// ============================================================
-
 import { ALL_RULES } from '../data/rules.js';
 import { EVENTS } from '../data/events.js';
 import { datesForState, NATIONALS } from '../data/meta.js';
@@ -40,8 +27,6 @@ function wordsOf(text) {
   );
 }
 
-// A query token matches a rule word exactly, or by shared prefix when
-// both are 4+ chars (so "teammates" finds "team", "switch" finds "switching").
 function hits(token, words) {
   for (const w of words) {
     if (w === token) return true;
@@ -52,14 +37,11 @@ function hits(token, words) {
 
 function findMentionedEvent(question, division) {
   const q = question.toLowerCase();
-  // Seven event names exist in BOTH divisions (Coding, Robotics, Chapter Team,
-  // Children's Stories, Data Science, System Control, Video Game Design), so
-  // always answer from the student's own division first.
+
   const pool = division ? EVENTS.filter((e) => e.division === division) : EVENTS;
   const exact = pool.find((e) => q.includes(e.name.toLowerCase()));
   if (exact) return exact;
-  // Otherwise require at least two distinctive words from an event's
-  // name, so "video length" alone doesn't lock onto one video event.
+
   let best = null;
   let bestCount = 1;
   for (const e of pool) {
@@ -96,15 +78,11 @@ export const SUGGESTED_QUESTIONS = [
   'Do I have to cite the images I use?',
 ];
 
-/**
- * Returns { intro, quotes: [{id, title, text}], outro }
- */
 export function composeAnswer(question, ctx = {}) {
   const q = question.toLowerCase();
   const tokens = tokenize(question);
   const mentioned = findMentionedEvent(question, ctx.profile?.division);
 
-  // ---- Intent: dates & countdowns ----
   if (/(when|how (long|many days)|days (until|till|left))/.test(q) && /(state|regional|national|conference)/.test(q)) {
     const state = ctx.profile?.state || 'your state';
     const d = datesForState(ctx.profile?.state);
@@ -130,7 +108,6 @@ export function composeAnswer(question, ctx = {}) {
     };
   }
 
-  // ---- Intent: event recommendation ----
   if (/(recommend|which event|what event|best event|should i (do|pick|choose|compete))/.test(q)) {
     return {
       intro:
@@ -140,7 +117,6 @@ export function composeAnswer(question, ctx = {}) {
     };
   }
 
-  // ---- Default: search the rulebook ----
   const scored = ALL_RULES.map((rule) => {
     let score = 0;
     const titleWords = wordsOf(rule.title);

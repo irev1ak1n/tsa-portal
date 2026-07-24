@@ -7,6 +7,9 @@
 @import './chat.css';
 @import './chats.css';
 @import './profile.css';
+@import './settings.css';
 @import './team.css';
 @import './badges.css';
 @import './onboarding.css';
+@import './auth.css';
+@import './resources.css';

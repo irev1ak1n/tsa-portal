@@ -1,10 +1,3 @@
-// ============================================================
-// TSA HUB — states, dates, announcements, badges (SAMPLE DATA)
-// Conference dates below are placeholders for the 2026–27
-// season. Edit them here, or later serve them from your
-// database / national admin dashboard.
-// ============================================================
-
 export const STATES = [
   'Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware',
   'Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky',
@@ -15,9 +8,6 @@ export const STATES = [
   'Virginia','Washington','West Virginia','Wisconsin','Wyoming','Other / International',
 ];
 
-// Placeholder season dates (ISO). A few states get specific
-// dates to demo the state selector; everyone else falls back
-// to DEFAULT_DATES.
 export const DEFAULT_DATES = {
   regionals: '2027-02-06',
   states: '2027-04-09',

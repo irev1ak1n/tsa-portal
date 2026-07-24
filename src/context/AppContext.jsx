@@ -1,23 +1,20 @@
-// ============================================================
-// App state — one context, persisted to localStorage.
-// This is the layer you will later replace with real API calls
-// to your backend/database. Every screen only talks to these
-// actions, so the swap will be contained to this file.
-// ============================================================
-
 import { createContext, useContext, useEffect, useState } from 'react';
+import { getMyProfile } from '../services/profileService.js';
+import { fetchEvents } from '../services/eventsService.js';
+import { setEvents } from '../data/events.js';
+import { supabase } from '../services/supabase.js';
 
 const KEY = 'tsa-hub-state-v1';
 
 
 const EMPTY = {
-  profile: null, // { name, grade, division, state, chapter, interests[], skills[], major }
-  myEvents: [], // event ids
-  tasks: [], // { id, title, assignee, eventId, status: 'todo'|'doing'|'done', due }
-  checklists: {}, // { [eventId]: [{ id, label, done }] }
+  profile: null,
+  myEvents: [],
+  tasks: [],
+  checklists: {},
   notes: '',
-  meetings: [], // { id, date, title }
-  teamMembers: [], // { id, name, role }
+  meetings: [],
+  teamMembers: [],
   coachCount: 0,
   chats: [],
   follows: [],
@@ -41,15 +38,57 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem(KEY, JSON.stringify(state));
+      const { profile, ...local } = state;
+      localStorage.setItem(KEY, JSON.stringify(local));
     } catch {
-      // storage full or unavailable — app keeps working in memory
     }
   }, [state]);
 
   const uid = () => Math.random().toString(36).slice(2, 9);
 
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    fetchEvents()
+        .then((rows) => {
+          if (!alive) return;
+          setEvents(rows);
+        })
+        .catch(() => {
+          if (alive) setEvents([]);
+        })
+        .finally(() => {
+          if (alive) setEventsLoading(false);
+        });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  async function refreshProfile() {
+    try {
+      const row = await getMyProfile();
+      setState((s) => ({ ...s, profile: row }));
+    } catch {
+      setState((s) => ({ ...s, profile: null }));
+    } finally {
+      setProfileLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    refreshProfile();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      refreshProfile();
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
   const actions = {
+    refreshProfile,
+
     saveProfile(profile) {
       setState((s) => ({ ...s, profile }));
     },
@@ -203,8 +242,6 @@ export function AppProvider({ children }) {
     },
   };
 
-  // Progress for an event = done items / total items across its
-  // checklist and any tasks tagged to it.
   function progressFor(eventId) {
     const list = state.checklists[eventId] || [];
     const tasks = state.tasks.filter((t) => t.eventId === eventId);
@@ -226,7 +263,9 @@ export function AppProvider({ children }) {
   );
 
   return (
-      <Ctx.Provider value={{ ...state, ...actions, progressFor, unreadFor, unreadTotal }}>
+      <Ctx.Provider
+          value={{ ...state, ...actions, profileLoading, eventsLoading, progressFor, unreadFor, unreadTotal }}
+      >
         {children}
       </Ctx.Provider>
   );

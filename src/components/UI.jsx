@@ -1,6 +1,3 @@
-// Shared UI primitives. Icons are inline SVG (stroke = currentColor)
-// so the app has zero icon dependencies.
-
 const PATHS = {
     home: 'M3 10.5 12 3l9 7.5M5 9.5V21h5v-6h4v6h5V9.5',
     grid: 'M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z',
@@ -19,6 +16,16 @@ const PATHS = {
     book: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5',
     funnel: 'M3.6 4.5h16.8a1.1 1.1 0 0 1 .84 1.81L14.6 14.3v5.2a1.1 1.1 0 0 1-.6.98l-3 1.53a1.1 1.1 0 0 1-1.6-.98V14.3L2.76 6.31A1.1 1.1 0 0 1 3.6 4.5z',
     lock: 'M5 11h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM7 11V7a5 5 0 0 1 10 0v4',
+    'chevron-right': 'm9 18 6-6-6-6',
+    'arrow-left': 'M19 12H5M12 19l-7-7 7-7',
+    help: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01',
+    shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+    'file-text': 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8',
+    'log-out': 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9',
+    switch: 'M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4',
+    info: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 16v-4M12 8h.01',
+    globe: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z',
+    accessibility: 'M12 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM19 9l-5.5 1.5L12 21l-1.5-10.5L5 9M9 22l3-8 3 8',
     menu: 'M3 6h18M3 12h18M3 18h18',
     camera: 'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
     'user-plus': 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM19 8v6M22 11h-6',

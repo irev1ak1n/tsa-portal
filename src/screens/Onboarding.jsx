@@ -1,274 +1,294 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
-import { INTEREST_OPTIONS, SKILL_OPTIONS, MAJOR_OPTIONS } from '../data/events.js';
+import {
+  saveMyProfile,
+  isUsernameAvailable,
+  suggestUsername,
+  divisionForGrade,
+} from '../services/profileService.js';
 import { STATES } from '../data/meta.js';
 
 const GRADES = ['6', '7', '8', '9', '10', '11', '12'];
 
 export default function Onboarding() {
-  const { profile, saveProfile } = useApp();
   const navigate = useNavigate();
-  const editing = !!profile;
+  const { profile, refreshProfile } = useApp();
+  const editing = !!(profile && profile.first_name);
 
   const [step, setStep] = useState(0);
-  const [name, setName] = useState(profile?.name || '');
-  const [grade, setGrade] = useState(profile?.grade || '');
-  const [division, setDivision] = useState(profile?.division || '');
-  const [state, setState] = useState(profile?.state || '');
-  const [chapter, setChapter] = useState(profile?.chapter || '');
-  const [headline, setHeadline] = useState(profile?.headline || '');
-  const [school, setSchool] = useState(profile?.school || '');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const [firstName, setFirstName] = useState(profile?.first_name || '');
+  const [lastName, setLastName] = useState(profile?.last_name || '');
+  const [username, setUsername] = useState(profile?.username || '');
+  const [usernameTouched, setUsernameTouched] = useState(!!profile?.username);
+  const [usernameState, setUsernameState] = useState('idle');
+  const [usernameError, setUsernameError] = useState('');
+  const [state, setStateField] = useState(profile?.state || '');
   const [city, setCity] = useState(profile?.city || '');
-  const [interests, setInterests] = useState(profile?.interests || []);
-  const [skills, setSkills] = useState(profile?.skills || []);
-  const [major, setMajor] = useState(profile?.major || 'Undecided');
+  const [school, setSchool] = useState(profile?.school || '');
+  const [grade, setGrade] = useState(profile?.grade || '');
+  const [chapter, setChapter] = useState(profile?.chapter || '');
 
-  const TOTAL = 6;
+  useEffect(() => {
+    if (!usernameTouched && (firstName || lastName)) {
+      setUsername(suggestUsername(firstName, lastName));
+    }
+  }, [firstName, lastName, usernameTouched]);
 
-  function pickGrade(g) {
-    setGrade(g);
-    if (!division) setDivision(Number(g) <= 8 ? 'MS' : 'HS');
-  }
+  useEffect(() => {
+    if (step !== 1) return;
+    const clean = username.trim().toLowerCase();
+    if (clean.length < 6) {
+      setUsernameState('short');
+      setUsernameError('');
+      return;
+    }
+    setUsernameState('checking');
+    setUsernameError('');
+    const t = setTimeout(async () => {
+      try {
+        const free = await isUsernameAvailable(clean);
+        setUsernameState(free ? 'ok' : 'taken');
+      } catch (err) {
+        setUsernameState('error');
+        setUsernameError(err?.message || String(err) || 'Check failed');
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, [username, step]);
 
-  function toggle(list, setList, value) {
-    setList(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
-  }
-
-  const canNext = [
-    name.trim().length > 0 && grade,
-    !!division,
-    !!state,
-    interests.length > 0,
+  const stepChecks = [
+    firstName.trim().length > 0 && lastName.trim().length > 0,
+    usernameState === 'ok',
+    state.trim().length > 0 && city.trim().length > 0,
+    grade && school.trim().length > 0,
     true,
-    true,
-  ][step];
+  ];
+  const VISIBLE = 5;
 
-  function finish() {
-    saveProfile({
-      ...profile,
-      name: name.trim(),
-      grade,
-      division,
-      state,
-      chapter: chapter.trim(),
-      headline: headline.trim(),
-      school: school.trim(),
-      city: city.trim(),
-      interests,
-      skills,
-      major,
-    });
-    navigate('/');
+  function next() {
+    setError('');
+    if (step < VISIBLE - 1) setStep(step + 1);
   }
+  function back() {
+    setError('');
+    if (step > 0) setStep(step - 1);
+  }
+
+  async function finish() {
+    setSaving(true);
+    setError('');
+    try {
+      await saveMyProfile({
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        username: username.trim().toLowerCase(),
+        state: state.trim(),
+        city: city.trim(),
+        school: school.trim(),
+        grade,
+        division: divisionForGrade(grade),
+      });
+      await refreshProfile();
+      navigate('/');
+    } catch (err) {
+      if (err.code === '23505') setError('That username was just taken. Pick another.');
+      else setError(err?.message || 'Could not save. Try again.');
+      setStep(1);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const uMsg = {
+    idle: '',
+    checking: 'Checking…',
+    ok: 'Available',
+    taken: 'Taken — try another',
+    short: 'At least 6 characters',
+    error: `Couldn't check: ${usernameError}`,
+  }[usernameState];
+
+  const uColor =
+      usernameState === 'ok'
+          ? 'var(--ok)'
+          : usernameState === 'taken' || usernameState === 'short' || usernameState === 'error'
+              ? 'var(--red-400)'
+              : 'var(--muted)';
 
   return (
       <div className="onb">
-        <div className="onb-hero">
-          <div className="eyebrow" style={{ color: '#ff8a97' }}>
-            {editing ? 'Update profile' : 'Season setup'}
-          </div>
-          <h1>TSA Hub</h1>
-          <p>
-            {editing
-                ? 'Change anything — your dashboard, recommendations, and deadlines update instantly.'
-                : 'Six quick questions. Everything in the app — events, deadlines, coaching — gets personalized from this.'}
-          </p>
-        </div>
-
-        <div className="dots" aria-label={`Step ${step + 1} of ${TOTAL}`}>
-          {Array.from({ length: TOTAL }).map((_, i) => (
-              <span key={i} className={i <= step ? 'on' : ''} />
+        <div className="onb-progress">
+          {Array.from({ length: VISIBLE }).map((_, i) => (
+              <span key={i} className={`onb-dot ${i <= step ? 'on' : ''}`} />
           ))}
         </div>
 
-        <div className="card">
-          {step === 0 && (
-              <>
-                <h2>Who's competing?</h2>
-                <div className="field">
-                  <label htmlFor="onb-name">First name</label>
-                  <input
-                      id="onb-name"
-                      className="input"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g., Jordan"
-                      autoFocus
-                  />
-                </div>
-                <div className="field">
-                  <label>Grade</label>
-                  <div className="chip-row">
-                    {GRADES.map((g) => (
-                        <button key={g} type="button" className={`chip ${grade === g ? 'on' : ''}`} onClick={() => pickGrade(g)}>
-                          {g}th
-                        </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="field">
-                  <label htmlFor="onb-headline">Headline (optional)</label>
-                  <input
-                      id="onb-headline"
-                      className="input"
-                      value={headline}
-                      onChange={(e) => setHeadline(e.target.value)}
-                      placeholder="e.g., TSA competitor · Video Game Design · Class of 2027"
-                      maxLength={90}
-                  />
-                  <p className="small muted" style={{ margin: '5px 0 0' }}>
-                    One line under your name — what you do in TSA.
-                  </p>
-                </div>
-              </>
-          )}
-
-          {step === 1 && (
-              <>
-                <h2>Your division</h2>
-                <p className="muted small">This filters every event and rule you'll see.</p>
-                <div className="chip-row">
-                  <button type="button" className={`chip ${division === 'MS' ? 'on' : ''}`} onClick={() => setDivision('MS')}>
-                    Middle School
-                  </button>
-                  <button type="button" className={`chip ${division === 'HS' ? 'on' : ''}`} onClick={() => setDivision('HS')}>
-                    High School
-                  </button>
-                </div>
-              </>
-          )}
-
-          {step === 2 && (
-              <>
-                <h2>Your state</h2>
-                <p className="muted small">Conference dates and countdowns come from this.</p>
-                <div className="field">
-                  <label htmlFor="onb-state">State association</label>
-                  <select id="onb-state" className="input" value={state} onChange={(e) => setState(e.target.value)}>
-                    <option value="">Select your state…</option>
-                    {STATES.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="field">
-                  <label htmlFor="onb-school">School</label>
-                  <input
-                      id="onb-school"
-                      className="input"
-                      value={school}
-                      onChange={(e) => setSchool(e.target.value)}
-                      placeholder="e.g., Ballantyne Ridge High School"
-                  />
-                </div>
-                <div className="field">
-                  <label htmlFor="onb-city">City</label>
-                  <input
-                      id="onb-city"
-                      className="input"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      placeholder="e.g., Charlotte"
-                  />
-                </div>
-                <div className="field">
-                  <label htmlFor="onb-chapter">TSA chapter (optional)</label>
-                  <input
-                      id="onb-chapter"
-                      className="input"
-                      value={chapter}
-                      onChange={(e) => setChapter(e.target.value)}
-                      placeholder="e.g., Ballantyne Ridge TSA"
-                  />
-                </div>
-              </>
-          )}
-
-          {step === 3 && (
-              <>
-                <h2>What are you into?</h2>
-                <p className="muted small">Pick everything that sounds fun — this drives your event matches.</p>
-                <div className="chip-row">
-                  {INTEREST_OPTIONS.map((opt) => (
-                      <button
-                          key={opt}
-                          type="button"
-                          className={`chip ${interests.includes(opt) ? 'on' : ''}`}
-                          onClick={() => toggle(interests, setInterests, opt)}
-                      >
-                        {opt}
-                      </button>
-                  ))}
-                </div>
-              </>
-          )}
-
-          {step === 4 && (
-              <>
-                <h2>Skills you already have</h2>
-                <p className="muted small">Optional — matching events to real skills makes recommendations sharper.</p>
-                <div className="chip-row">
-                  {SKILL_OPTIONS.map((opt) => (
-                      <button
-                          key={opt}
-                          type="button"
-                          className={`chip ${skills.includes(opt) ? 'on' : ''}`}
-                          onClick={() => toggle(skills, setSkills, opt)}
-                      >
-                        {opt}
-                      </button>
-                  ))}
-                </div>
-              </>
-          )}
-
-          {step === 5 && (
-              <>
-                <h2>Thinking about college?</h2>
-                <p className="muted small">
-                  Events connect to majors and careers. If you're not sure, leave it Undecided.
-                </p>
-                <div className="field">
-                  <label htmlFor="onb-major">Intended major</label>
-                  <select id="onb-major" className="input" value={major} onChange={(e) => setMajor(e.target.value)}>
-                    {MAJOR_OPTIONS.map((m) => (
-                        <option key={m} value={m}>
-                          {m}
-                        </option>
-                    ))}
-                  </select>
-                </div>
-              </>
-          )}
-
-          <div className="onb-nav">
-            {step > 0 && (
-                <button type="button" className="btn ghost" onClick={() => setStep(step - 1)}>
-                  Back
-                </button>
-            )}
-            {step < TOTAL - 1 ? (
-                <button type="button" className="btn navy block" disabled={!canNext} onClick={() => setStep(step + 1)}>
-                  Continue
-                </button>
-            ) : (
-                <button type="button" className="btn primary block" onClick={finish}>
-                  {editing ? 'Save changes' : 'Build my dashboard'}
-                </button>
-            )}
-          </div>
-        </div>
-
-        {editing && (
-            <p className="small muted" style={{ textAlign: 'center', marginTop: 12 }}>
-              <button type="button" className="btn ghost small" onClick={() => navigate(-1)}>
-                Cancel
-              </button>
-            </p>
+        {step === 0 && (
+            <div className="onb-step">
+              <h1 className="onb-h">What's your name?</h1>
+              <p className="onb-p">This is how you'll show up to teammates and chapters.</p>
+              <div className="field">
+                <label htmlFor="onb-first">First name</label>
+                <input
+                    id="onb-first"
+                    className="input"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="Your first name"
+                    autoFocus
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="onb-last">Last name</label>
+                <input
+                    id="onb-last"
+                    className="input"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Your last name"
+                />
+              </div>
+            </div>
         )}
+
+        {step === 1 && (
+            <div className="onb-step">
+              <h1 className="onb-h">Create a username</h1>
+              <p className="onb-p">We suggested one from your name. Change it if you like — at least 6 characters.</p>
+              <div className="field">
+                <label htmlFor="onb-user">Username</label>
+                <input
+                    id="onb-user"
+                    className="input"
+                    value={username}
+                    onChange={(e) => {
+                      setUsernameTouched(true);
+                      setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9._]/g, ''));
+                    }}
+                    placeholder="your_username"
+                    autoFocus
+                />
+                <p className="small" style={{ margin: '6px 0 0', color: uColor }}>
+                  {uMsg}
+                </p>
+              </div>
+            </div>
+        )}
+
+        {step === 2 && (
+            <div className="onb-step">
+              <h1 className="onb-h">Where are you?</h1>
+              <p className="onb-p">Your state sets your TSA delegation and conference dates. United States is assumed.</p>
+              <div className="field">
+                <label htmlFor="onb-state">State</label>
+                <select id="onb-state" className="input" value={state} onChange={(e) => setStateField(e.target.value)}>
+                  <option value="">Select your state…</option>
+                  {STATES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label htmlFor="onb-city">City</label>
+                <input
+                    id="onb-city"
+                    className="input"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="Your city"
+                />
+              </div>
+            </div>
+        )}
+
+        {step === 3 && (
+            <div className="onb-step">
+              <h1 className="onb-h">Your school</h1>
+              <p className="onb-p">Type your school's name. Autocomplete from a schools dataset is coming later.</p>
+              <div className="field">
+                <label htmlFor="onb-school">School</label>
+                <input
+                    id="onb-school"
+                    className="input"
+                    value={school}
+                    onChange={(e) => setSchool(e.target.value)}
+                    placeholder="Your school's name"
+                    autoFocus
+                />
+              </div>
+              <div className="field">
+                <label>Grade</label>
+                <div className="chip-row">
+                  {GRADES.map((g) => (
+                      <button key={g} type="button" className={`chip ${grade === g ? 'on' : ''}`} onClick={() => setGrade(g)}>
+                        {g}th
+                      </button>
+                  ))}
+                </div>
+                {grade && (
+                    <p className="small muted" style={{ margin: '6px 0 0' }}>
+                      {divisionForGrade(grade) === 'MS' ? 'Middle School' : 'High School'} division
+                    </p>
+                )}
+              </div>
+              <div className="field">
+                <label htmlFor="onb-chapter">TSA chapter (optional)</label>
+                <input
+                    id="onb-chapter"
+                    className="input"
+                    value={chapter}
+                    onChange={(e) => setChapter(e.target.value)}
+                    placeholder="e.g., Ballantyne Ridge TSA"
+                />
+              </div>
+            </div>
+        )}
+
+        {step === 4 && (
+            <div className="onb-step">
+              <h1 className="onb-h">One last thing</h1>
+              <p className="onb-p">
+                TSA Hub helps you organize your TSA season — it doesn't make you an official TSA member. Official membership
+                happens through your school chapter and advisor.
+              </p>
+              <p className="onb-p">
+                By continuing you agree that the info you enter is yours to share, and that this is a student tool, not an
+                official TSA product.
+              </p>
+            </div>
+        )}
+
+        {error && (
+            <div className="notice" style={{ marginTop: 12 }}>
+              <span aria-hidden="true">⚠</span>
+              <span>{error}</span>
+            </div>
+        )}
+
+        <div className="onb-nav">
+          {step > 0 ? (
+              <button className="btn ghost" onClick={back} disabled={saving}>
+                Back
+              </button>
+          ) : (
+              <span />
+          )}
+          {step < VISIBLE - 1 ? (
+              <button className="btn primary" onClick={next} disabled={!stepChecks[step]}>
+                Next
+              </button>
+          ) : (
+              <button className="btn primary" onClick={finish} disabled={saving}>
+                {saving ? 'Saving…' : editing ? 'Save' : 'Finish'}
+              </button>
+          )}
+        </div>
       </div>
   );
 }

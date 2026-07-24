@@ -35,14 +35,12 @@ export default function Coach() {
     bumpCoach();
   }
 
-  // Seed question from event pages ("Ask the coach") or ?q=
   useEffect(() => {
     const seed = location.state?.q || params.get('q');
     if (seed && !seeded.current) {
       seeded.current = true;
       ask(seed);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

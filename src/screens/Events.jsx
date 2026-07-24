@@ -5,7 +5,7 @@ import { EVENTS, CATEGORIES, teamSizeLabel } from '../data/events.js';
 import { Icon } from '../components/UI.jsx';
 
 export default function Events() {
-    const { profile, myEvents, addEvent, removeEvent } = useApp();
+    const { profile, myEvents, addEvent, removeEvent, eventsLoading } = useApp();
     const [query, setQuery] = useState('');
     const [division, setDivision] = useState(profile?.division || 'HS');
     const [category, setCategory] = useState('All');
@@ -103,7 +103,9 @@ export default function Events() {
                 })}
             </div>
 
-            {list.length === 0 && (
+            {eventsLoading && <p className="muted">Loading events…</p>}
+
+            {!eventsLoading && list.length === 0 && (
                 <div className="card">
                     <p className="muted" style={{ margin: 0 }}>
                         No events match that search in this division. Try clearing filters.

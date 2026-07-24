@@ -6,8 +6,12 @@ import { Icon } from '../components/UI.jsx';
 export default function EventDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { myEvents, addEvent, removeEvent } = useApp();
+    const { myEvents, addEvent, removeEvent, eventsLoading } = useApp();
     const event = getEvent(id);
+
+    if (eventsLoading) {
+        return <p className="muted">Loading…</p>;
+    }
 
     if (!event) {
         return (

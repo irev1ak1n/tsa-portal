@@ -1,10 +1,3 @@
-// ============================================================
-// TSA HUB — sample people (SAMPLE DATA)
-// Fake accounts so the follow + new-message flows are
-// demonstrable with no backend. Replace with real chapter
-// members from your database in Phase 2.
-// ============================================================
-
 export const SUGGESTED_ACCOUNTS = [
     {
         id: 'maya',
